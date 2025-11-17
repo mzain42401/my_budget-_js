@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Budget App </title>
+   
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: #f4f6f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        background: #fff;
+        width: 90%;
+        max-width: 1100px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        display: flex;
+        gap: 30px;
+      }
+
+      /* Left side */
+      .left-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .summary {
+        display: flex;
+        justify-content: space-between;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      .summary div {
+        background: #f0f3f6;
+        padding: 15px;
+        border-radius: 12px;
+        width: 32%;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .summary h2 {
+        color: #2e86de;
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+
+      .summary p {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .inputs {
+        background: #f9fafb;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .inputs h3 {
+        text-align: center;
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+      }
+
+      button {
+        width: 100%;
+        background: #2e86de;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #1b4f72;
+      }
+
+      /* Right side */
+      .right-section {
+        flex: 1;
+        background: #f9fafb;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        overflow-y: auto;
+        max-height: 550px;
+      }
+
+      .right-section h3 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .expense-item {
+        display: flex;
+        justify-content: space-between;
+        background: #f0f3f6;
+        padding: 12px 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .expense-item span {
+        font-size: 15px;
+        color: #333;
+      }
+
+      @media (max-width: 900px) {
+        .container {
+          flex-direction: column;
+        }
+        .right-section {
+          max-height: none;
+        }
+      }
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0,0.5);
+
+        /* Center the box */
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 20px;
+        width: 320px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.4);
+        animation: popup 0.3s ease-out;
+      }
+
+      .modal-content input {
+        width: 90%;
+        padding: 8px;
+        margin: 8px 0;
+      }
+
+      .modal-content button {
+        margin: 5px;
+        padding: 8px 15px;
+        cursor: pointer;
+      }
+
+      /* Smooth popup animation */
+      @keyframes popup {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  </head>
+  <body>
+    <div class="container">
+      <!-- LEFT SECTION -->
+      <div class="left-section">
+        <div class="summary">
+          <div>
+            <h2>Total Budget</h2>
+            <p  id="totalBudgetShow">0</p>
+          </div>
+          <div>
+            <h2>Total Expense</h2>
+            <p id="totalExpenseShow">0</p>
+          </div>
+          <div>
+            <h2>Remaining</h2>
+            <p id="remainingBalanceShow">0</p>
+          </div>
+        </div>
+
+        <div class="inputs">
+          <h3>Set Total Budget</h3>
+          <input
+            type="number"
+            id="budgetInput"
+            placeholder="Enter total salary"
+          />
+          <button id="setBudgetBtn" onclick="set_Budget_func()">
+            Set Budget
+          </button>
+
+          <h3 style="margin-top: 20px">Add Expense</h3>
+          <input
+            type="number"
+            id="expenseAmountInput"
+            placeholder="Enter expense amount"
+          />
+          <input
+            type="text"
+            id="expenseCategoryInput"
+            placeholder="Enter category"
+          />
+          <input type="date" id="expenseDateInput" />
+          <button id="addExpenseBtn" onclick="set_Expense_func()">
+            Add Expense
+          </button>
+        </div>
+      </div>
+      <div id="editModal" class="modal">
+        <div class="modal-content">
+          <h3>Edit Expense</h3>
+
+          <input type="number" id="editAmount" placeholder="Amount" />
+          <input type="text" id="editCategory" placeholder="Category" />
+          <input type="date" id="editDate" />
+
+          <button id="save_update_value">Save</button>
+          <button onclick="closeModal()">Cancel</button>
+        </div>
+      </div> 
+
+      
+
+      <!-- RIGHT SECTION -->
+      <div class="right-section">
+        <h3>Expense List</h3>
+        <ul id="my_ul" style="list-style-type: none"></ul>
+      </div>
+    </div>
+    <script src="./my_budget.js"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
